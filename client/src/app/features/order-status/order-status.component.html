@@ -1,0 +1,57 @@
+<div class="order-status-container">
+  <header class="order-status__header">
+    <h1 class="order-status__title">Estado de Órdenes</h1>
+    <p class="order-status__subtitle">Seguimiento en tiempo real de tus pedidos</p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="order-status__loading">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando órdenes...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="order-status__error">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="retryConnection()">
+        Reintentar conexión
+      </button>
+    </div>
+  }
+
+  @if (!isLoading() && !error() && orders().length === 0) {
+    <div class="order-status__empty">
+      <mat-icon>inbox</mat-icon>
+      <p>No hay órdenes disponibles</p>
+    </div>
+  }
+
+  @if (!isLoading() && orders().length > 0) {
+    <div class="order-status__grid">
+      @for (order of orders(); track order.id) {
+        <app-order-status-card
+          [order]="order"
+          [ngClass]="getStatusClass(order.status)">
+        </app-order-status-card>
+      }
+    </div>
+  }
+
+  <footer class="order-status__footer">
+    <div class="order-status__connection-status">
+      @if (isConnected()) {
+        <span class="connection-badge connection-badge--active">
+          <span class="connection-badge__dot"></span>
+          Conectado en tiempo real
+        </span>
+      } @else {
+        <span class="connection-badge connection-badge--disconnected">
+          <span class="connection-badge__dot"></span>
+          Desconectado
+        </span>
+      }
+    </div>
+  </footer>
+</div>
